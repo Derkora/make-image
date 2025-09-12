@@ -16,12 +16,11 @@ RUN apt-get update && \
     net-tools pciutils iputils-ping iptables iproute2 traceroute \
     nmap curl telnet wget build-essential iperf3 knot-host rsyslog \
     openssh-server openssh-client && \
-
-RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
     apt-get autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/cache/* && \
-    rm -rf /var/lib/log/*    
+    rm -rf /var/lib/log/* 
 
-CMD ["bash"]
-# CMD ["sh", "-c", "cd; exec bash -i"]
+CMD ["/usr/sbin/init"]
