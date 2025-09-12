@@ -23,10 +23,4 @@ RUN apt-get update && \
     rm -rf /var/lib/cache/* && \
     rm -rf /var/lib/log/* 
 
-RUN echo "root:r00t" | chpasswd
-RUN mkdir -p /etc/systemd/system/getty@.service.d/ && \
-    echo "[Service]" > /etc/systemd/system/getty@.service.d/override.conf && \
-    echo "ExecStart=" >> /etc/systemd/system/getty@.service.d/override.conf && \
-    echo "ExecStart=-/sbin/agetty --autologin root --noclear %I \$TERM" >> /etc/systemd/system/getty@.service.d/override.conf
-
-CMD ["/usr/sbin/init"]
+CMD ["/bin/bash"]
