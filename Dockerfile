@@ -1,33 +1,27 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
-LABEL maintainer="derkora.27@gmail.com"
+LABEL maintainer="nevarre"
+LABEL description="Ubuntu 22.04 that designed to be used in network practices"
+
+VOLUME /root
 
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Konfigurasi debconf
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get install -y --no-install-recommends \
-    systemd-sysv vim nano htop ethtool tcpdump \
-    net-tools pciutils iputils-ping iptables iproute2 \
-    git nmap curl telnet \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    systemd-sysv systemd nano vim htop ethtool tcpdump mtr-tiny socat \
+    net-tools pciutils iputils-ping iptables iproute2 traceroute \
+    nmap curl telnet wget build-essential iperf3 knot-host rsyslog \
     openssh-server openssh-client && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Konfigurasi default network
-RUN echo "auto eno1" > /etc/network/interfaces && \
-    echo "iface eno1 inet dhcp" >> /etc/network/interfaces
+RUN apt-get clean && \
+    apt-get autoclean && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/cache/* && \
+    rm -rf /var/lib/log/*    
 
-# Tambahkan konfigurasi DNS dengan cara aman
-RUN mkdir -p /etc/systemd/resolved.conf.d && \
-    echo "[Resolve]" > /etc/systemd/resolved.conf.d/custom.conf && \
-    echo "DNS=8.8.8.8 8.8.4.4" >> /etc/systemd/resolved.conf.d/custom.conf
-
-# Buat direktori kerja dan tambahkan volume
-WORKDIR /root
-VOLUME /root
-
-# Konfigurasi root password
-RUN echo "root:r00t" | chpasswd
-
-# CMD untuk menjaga kontainer tetap berjalan
-CMD ["/bin/bash"]
+CMD ["bash"]
+# CMD ["sh", "-c", "cd; exec bash -i"]
